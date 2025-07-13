@@ -1,0 +1,35 @@
+<div class="left">
+    <div>
+        <p class="textonleft"><b>filemanager</b></p>
+        <a href="/deleteall" >USUŃ DANE O PLIKACH Z TABLICY</a>
+    </div>
+</div>
+<div class="right">
+    <table>
+    <tr>
+        <th>id</th>
+        <th>obraz</th>
+        <th>name</th>
+        <th>size</th>
+        <th>type</th>
+        <th>-</th>
+        <th>-</th>
+        <th>-</th>
+        <th>-</th>
+    </tr>
+    {{#each object}}
+            <tr>
+                <td style="margin: autos;">{{id}}</td>
+                <td><img src="gfx/{{img}}.png" width="50px" height="50px"></td>
+                <td>{{name}}</td>
+                <td>{{size}}</td>
+                <td>{{type}}</td>
+                <td><a href="/show?dane={{id}}" class="tablink">SHOW</a></td>
+                <td><a href="/info?dane={{id}}" class="tablink">INFO</a></td>
+                <td><a href="/download?dane={{id}}" class="tablink">Download</a></td>
+                <td><a href="/delete?dane={{id}}" class="tablink">DELETE</a></td>
+            </tr>
+    {{/each}}
+<tr></tr>
+</table>
+</div>

@@ -1,0 +1,107 @@
+<div class="w-screen h-24 bg-zinc-100 grid grid-cols-6 shadow-md">
+    <div class="flex items-center">
+        <button id="dropdownDefaultButton" class="h-4 font-extrabold m-4" data-dropdown-toggle="dropdown" type="button">MENU</button>
+            {{!-- dropdown --}}
+        <div id="dropdown" class="z-10 hidden bg-zinc-100 rounded-lg shadow w-44">
+            <ul class="py-2 text-sm" aria-labelledby="dropdownDefaultButton">
+                <li>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" id="newfolder"><i class="fa-regular fa-folder mr-2"></i> Utwórz folder</a>
+                </li>
+                <li>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" id="newfile"><i class="fa-regular fa-file mr-2"></i> Utwórz nowy plik</a>
+                </li>
+                <li>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" id="changeName"><i class="fa-regular fa-pen-to-square mr-2"></i> Zmień nazwę</a>
+                </li>
+                <li>
+                    <a href="#" class="block px-4 py-2 hover:bg-gray-200" id="openForm"><i class="fa-solid fa-arrow-up-from-bracket mr-2"></i> Prześlij plik</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-span-4 flex justify-center items-center">
+        <a class="text-2xl font-extrabold tracking-wide decoration-4" href="/">FILEMANAGER</a>
+    </div>
+    <div class="flex items-center justify-end">
+    </div>
+</div>
+<div class="flex justify-center w-screen">
+    <div class="w-[1600px]">
+        <div class="p-4 text-indigo-500 font-semibold" onload="show({{root}})">
+            <a href="/">home</a><i class="fa-solid fa-angle-right"></i>
+            {{#each path}}
+            <a href="/backTo?path={{path}}">{{name}}</a><i class="fa-solid fa-angle-right"></i>
+            {{/each}}
+        </div>
+        <div class="flex">
+            <div class="w-6/12 p-4">
+                <p>Pliki</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    {{#each files}}
+                    <div class="w-28 h-32 bg-lime-100 mt-8 rounded-xl transition ease-in duration-150 hover:-translate-y-1 hover:scale-110 hover:bg-lime-200">
+                        <div class="flex justify-end mr-1 text-slate-700"><a href="/delete?name={{name}}" onclick="sureToDelete(event)"><i class="fa-solid fa-circle-xmark"></i></a></div>
+                        <div class="flex justify-center m-1"><img src="gfx/file.png" width="50px" height="50px" alt=""></div>
+                        <div class="flex justify-center m-1 overflow-hidden h-6"><a href="/editFile?name={{name}}" class="text-center">{{name}}</a></div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            <div class="w-6/12 p-4">
+                <p>Foldery</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    {{#each directories}}
+                    <div class="w-28 h-32 bg-rose-200 mt-8 rounded-xl transition ease-in duration-150 hover:-translate-y-1 hover:scale-110 hover:bg-rose-300">
+                        <div class="flex justify-end mr-1 text-slate-700"><a href="/delete?name={{name}}" class="del" onclick="sureToDelete(event)"><i class="fa-solid fa-circle-xmark"></i></a></div>
+                        <div class="flex justify-center m-1"><img src="gfx/folder.png" width="50px" height="50px" alt=""></div>
+                        <div class="flex justify-center m-1 overflow-hidden h-6"><a href="/redirect?name={{name}}" class="text-center">{{name}}</a></div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<dialog id="dialogFolder" class="w-80 h-52 rounded-xl shadow-2xl border-2 border-gray-300">
+    <form action="/createCatalog" method="get" id="catalogForm" class="flex flex-col">
+        <input type="hidden" name="root" value="{{root}}" />
+        <label class="font-semibold text-center m-3" for="name">Podaj nazwę nowego katalogu</label>
+        <input class="h-10 p-2 outline-none rounded-xl m-4 border-2 border-blue-300" type="text" name="name" id="catalogName">
+        <div class="flex justify-end">
+            <button type="button" class="w-24 border-gray-400 border-2 rounded p-2 m-2 hover:bg-gray-200" id="c1">Anuluj</button>
+            <button type="submit" class="w-24 rounded bg-blue-600 text-white p-2 m-2 mr-4 hover:bg-blue-700 font-semibold">Dodaj</button>
+        </div>
+    </form>
+</dialog>
+<dialog id="dialogFile" class="w-80 h-52 rounded-xl shadow-2xl border-2 border-gray-300">
+    <form action="/createFile" method="get" id="fileForm" class="flex flex-col">
+        <input type="hidden" name="root" value="{{root}}" />
+        <label class="font-semibold text-center m-3" for="name">Podaj nazwę nowego pliku</label>
+        <input class="h-10 p-2 outline-none rounded-xl m-4 border-2 border-blue-300" type="text" name="name" id="fileName">
+        <div class="flex justify-end">
+            <button type="button" class="w-24 border-gray-400 border-2 rounded p-2 m-2 hover:bg-gray-200" id="c2">Anuluj</button>
+            <button type="submit" class="w-24 rounded bg-blue-600 text-white p-2 m-2 mr-4 hover:bg-blue-700 font-semibold">Dodaj</button>
+        </div>
+    </form>
+</dialog>
+<dialog id="dialogChangeName" class="w-80 h-52 rounded-xl shadow-2xl border-2 border-gray-300">
+    <form action="/changeName" method="get" id="nameForm" class="flex flex-col">
+        <input type="hidden" name="root" value="{{root}}" />
+        <label class="font-semibold text-center m-3" for="newName">Zmiana nazwy folderu</label>
+        <input class="h-10 p-2 outline-none rounded-xl m-4 border-2 border-blue-300" type="text" name="newName" id="newName">
+        <div class="flex justify-end">
+            <button type="button" class="w-24 border-gray-400 border-2 rounded p-2 m-2 hover:bg-gray-200" id="c3">Anuluj</button>
+            <button type="submit" class="w-24 rounded bg-blue-600 text-white p-2 m-2 mr-4 hover:bg-blue-700 font-semibold">Zmień</button>
+        </div>
+    </form>
+</dialog>
+<dialog id="uploadForm" class="w-80 h-52 rounded-xl shadow-2xl border-2 border-gray-300">
+    <form enctype="multipart/form-data" method="POST" action="/send" class="flex flex-col">
+        <input type="text" name="text" value="{{root}}" hidden>        
+        <label class="font-semibold text-center m-3 mb-1" for="file_input">Upload file</label>
+        <input class="h-8 m-4 block text-sm border border-gray-400 rounded-lg cursor-pointer bg-gray-100 focus:outline-none" id="file_input" type="file" name="imageupload" multiple required>
+        <div class="flex justify-end mt-4">
+            <button type="button" class="w-24 border-gray-400 border-2 rounded p-2 m-2 hover:bg-gray-200" id="c4">Anuluj</button>
+            <button type="submit" class="w-28 rounded bg-blue-600 text-white p-2 m-2 mr-4 hover:bg-blue-700 font-semibold"><i class="fa-regular fa-paper-plane mr-2"></i> Prześlij</button>
+        </div>
+    </form>
+</dialog>

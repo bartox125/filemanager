@@ -1,0 +1,144 @@
+<div class="w-screen h-24 bg-zinc-100 grid grid-cols-6 shadow-md">
+    <div class="flex items-center">
+    </div>
+    <div class="col-span-4 flex justify-center items-center">
+        <a class="text-2xl font-extrabold tracking-wide decoration-4" href="/">FILEMANAGER</a>
+    </div>
+    <div class="flex items-center justify-end">
+    </div>
+</div>
+<div class="grid grid-cols-8">
+    <div class="borders height mr-2 flex flex-col p-3">
+        <button id="saveFile" class="flex items-center justify-center border-2 rounded-md p-1 m-1 bg-sky-300 hover:bg-sky-400"><i class="fa-solid fa-floppy-disk mr-1"></i> Zapisz plik</button>
+        <button id="colors" class="flex items-center justify-center border-2 rounded-md p-1 m-1 hover:bg-gray-200"><i class="fa-solid fa-palette mr-1"></i> Zmień motyw</button>
+        <button id="changeName" class="flex items-center justify-center border-2 rounded-md p-1 m-1 hover:bg-gray-200"><i class="fa-solid fa-pen-to-square mr-1"></i> Zmien nazwe</button>
+        <div class="flex items-center justify-center border-2 rounded-md m-1">
+            <button class="flex items-center justify-center bg-sky-300 hover:bg-sky-400 w-2/12 h-full rounded-l" id="f-">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-a-arrow-down"><path d="M3.5 13h6"/><path d="m2 16 4.5-9 4.5 9"/><path d="M18 7v9"/><path d="m14 12 4 4 4-4"/></svg>
+            </button>
+            <p class="m-1 w-8/12 text-center">Rozmiar tekstu</p>
+            <button class="flex items-center justify-center bg-sky-300 hover:bg-sky-400 w-2/12 h-full rounded-r" id="f+">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-a-arrow-up"><path d="M3.5 13h6"/><path d="m2 16 4.5-9 4.5 9"/><path d="M18 16V7"/><path d="m14 11 4-4 4 4"/></svg>
+            </button>
+        </div>
+        <button class="flex items-center justify-center border-2 rounded-md p-1 m-1 hover:bg-gray-200" id="saveConfig">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-pen"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5.5"/><path d="M4 13.5V6a2 2 0 0 1 2-2h2"/><path d="M13.378 15.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/></svg>
+            <p>zapisz ustawienia</p>
+        </button>
+    </div>
+    <div class="col-span-7">
+        <div class="h-8 text-indigo-500 font-semibold">{{path}}/{{name}}</div>
+        <form action="/saveChanges" method="get" id="editedText">
+            <div class="flex">
+                <div class="heightArea pl-1" id="rows" style="font-size: 12px;background-color: gray;"></div>
+                <textarea class="heightArea w-screen pl-2 outline-none border-left" name="content" id="editArea" cols="30" rows="10" style="font-size: 12px; background-color: gray;color: whitesmoke;">{{content}}</textarea>
+            </div>
+            <input type="hidden" name="root" value="{{path}}/{{name}}">
+        </form>
+    </div>
+</div>
+<dialog id="dialogChangeName" class="w-80 h-52 rounded-xl shadow-2xl border-2 border-gray-300">
+    <form action="/changeFileName" method="get" id="nameForm" class="flex flex-col">
+        <input type="hidden" name="root" value="{{root}}" />
+        <label class="font-semibold text-center m-3" for="newName">Zmień nazwe folderu</label>
+        <input class="h-10 p-2 outline-none rounded-xl m-4 border-2 border-blue-300" type="text" name="newName" id="newName">
+        <div class="flex justify-end">
+            <button type="button" class="w-24 border-gray-400 border-2 rounded p-2 m-2 hover:bg-gray-200" id="cancel">Anuluj</button>
+            <button class="w-24 rounded bg-blue-600 text-white p-2 m-2 mr-4 hover:bg-blue-700 font-semibold" type="submit">Zapisz</button>
+        </div>
+    </form>
+</dialog>
+<script>
+    const dialog=document.getElementById("dialogChangeName")
+    const changeName=document.getElementById("changeName")
+    const textarea = document.getElementById("editArea")
+    const rows=document.getElementById("rows")
+    const form=document.getElementById("editedText")
+    const save=document.getElementById("saveFile")
+    changeName.addEventListener('click', function(){
+        dialog.showModal()
+    })
+    document.getElementById("cancel").addEventListener('click', function(){
+        document.getElementById("dialogChangeName").close();
+    })
+    textarea.addEventListener('keyup', ()=>{
+        showCount()
+    })
+    window.addEventListener("DOMContentLoaded", ()=>{
+        takeData()
+        showCount()
+    })
+    save.addEventListener("click", ()=>{
+        form.submit()
+    })
+    function countRows(){
+            return textarea.value.split("\n").length;
+        }
+        function showCount(){
+            let max=countRows()
+            let cos=''
+            for(let i =0; i<countRows();i++){
+                cos+=`<p>${i+1}</p>`
+            }
+            rows.innerHTML=cos
+        }
+    document.getElementById("f-").addEventListener('click', function(){
+        let a=parseInt(textarea.style.fontSize.slice(0,2))
+        textarea.style.fontSize=a-2+"px"
+        rows.style.fontSize=a-2+"px"
+    })
+    document.getElementById("f+").addEventListener('click', function(){
+        let a=parseInt(rows.style.fontSize.slice(0,2))
+        textarea.style.fontSize=a+2+"px"
+        rows.style.fontSize=a+2+"px"
+    })
+    document.getElementById("colors").addEventListener('click', function(){
+        let tab=[{ctext: "green", cbackground: "black"},{ctext: "cornflowerblue", cbackground: "beige"}, {ctext: "whitesmoke", cbackground: "gray"}]
+        if(textarea.style.color=="green"){
+            textarea.style.color=tab[1].ctext
+            textarea.style.backgroundColor=tab[1].cbackground
+            rows.style.backgroundColor=tab[1].cbackground
+            rows.style.color=tab[1].ctext
+        }
+        else if(textarea.style.color=="cornflowerblue"){
+            textarea.style.color=tab[2].ctext
+            textarea.style.backgroundColor=tab[2].cbackground
+            rows.style.backgroundColor=tab[2].cbackground
+            rows.style.color=tab[2].ctext
+        }
+        else if(textarea.style.color=="whitesmoke"){
+            textarea.style.color=tab[0].ctext
+            textarea.style.backgroundColor=tab[0].cbackground
+            rows.style.backgroundColor=tab[0].cbackground
+            rows.style.color=tab[0].ctext
+        }
+    })
+    document.getElementById("saveConfig").addEventListener('click', ()=>{
+            const data = {
+                message: {c1:textarea.style.color, c2: textarea.style.backgroundColor, font: textarea.style.fontSize}
+            };
+
+            fetch('http://localhost:3000/data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+    })
+
+function takeData(){
+    fetch('http://localhost:3000/take')
+        .then(response => response.json())
+        .then(data =>{ JSON.stringify(data, null, 5)
+                let cos=JSON.stringify(data, null, 5)
+                let obj=JSON.parse(cos)
+                textarea.style.color=obj.c1
+                textarea.style.backgroundColor=obj.c2
+                textarea.style.fontSize=obj.font
+                rows.style.backgroundColor=obj.c2
+                rows.style.fontSize=obj.font
+                rows.style.color=obj.c1      
+    })
+}
+</script>
